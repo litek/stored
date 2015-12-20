@@ -1,0 +1,28 @@
+{
+  "name": "stored",
+  "version": "0.0.1",
+  "description": "Simple cache library",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/litek/stored.git"
+  },
+  "keywords": [
+    "cache",
+    "storage"
+  ],
+  "author": "Ketil Albertsen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/litek/stored/issues"
+  },
+  "homepage": "https://github.com/litek/stored#readme",
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4",
+    "rimraf": "^2.4.4"
+  }
+}
