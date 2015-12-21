@@ -49,9 +49,12 @@ class Stored {
   }
 
   ensure(key, fn) {
+    let write = false
+
     return this.read(key).catch(function() {
+      write = true
       return fn()
-    }).then((body) => this.write(key, body))
+    }).then((body) => !write ? body : this.write(key, body))
   }
 }
 
