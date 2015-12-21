@@ -2,20 +2,6 @@
 const fs = require('fs')
 const path = require('path')
 
-const promisify = function(obj, method) {
-  return function() {
-    let args = [].slice.call(arguments)
-
-    return new Promise(function(resolve, reject) {
-      args.push((err, res) => err ? reject(err) : resolve(res))
-      obj[method].apply(obj, args)
-    })
-  }
-}
-
-/**
- * Simple disk cache
- */
 class Stored {
   constructor(dir, ext) {
     if (!dir) throw new Error('Expected a cache directory')
@@ -24,20 +10,23 @@ class Stored {
     this.ext = '.json'
   }
 
-  name(key) {
+  filename(key) {
     return path.join(this.dir, key) + this.ext
   }
 
   exists(key, ttl) {
-    let file = this.name(key)
+    let file = this.filename(key)
 
     return new Promise(function(resolve, reject) {
-      fs.stat(file, (err, res) => resolve(!err))
+      fs.stat(file, function(err, res) {
+        if (err || !ttl) return resolve(!err)
+        resolve((res.mtime.getTime() + ttl) > Date.now())
+      })
     })
   }
 
   write(key, body) {
-    let file = this.name(key)
+    let file = this.filename(key)
     let json = JSON.stringify(body)
 
     return new Promise(function(resolve, reject) {
@@ -46,7 +35,7 @@ class Stored {
   }
 
   read(key, ttl) {
-    let file = this.name(key)
+    let file = this.filename(key)
 
     return this.exists(key, ttl).then(function(exists) {
       if (!exists) throw new Error('Cache key does not exist or is expired')
